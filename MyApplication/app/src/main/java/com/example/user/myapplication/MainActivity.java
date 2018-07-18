@@ -18,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         //run a query
-        Cursor cursor = db.query(InClassDatabaseHelper.TABLE_NAME,new String[]
+        Cursor cursor = db.query(InClassDatabaseHelper.TABLE_NAME, new String[]
                 {"NAME","PASSWORD","DATE"},
-                null,null,null,null,null);//
+                null,null,null,null,null);
 
         if(cursor.moveToFirst()){
             String name = cursor.getString(0);

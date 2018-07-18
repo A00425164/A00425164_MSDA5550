@@ -20,12 +20,15 @@ class InClassDatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL("CREATE TABLE" + TABLE_NAME + " ("
-        + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + "NAME TEXT, "
-        + "PASSWORD TEXT, " //Never store passwords in clear text in real apps
-        + "HEALTH_CARD_NUMB TEXT, "
-        + "DATE INTEGER);");
+
+        String sql = "CREATE TABLE " + TABLE_NAME + " ("
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "NAME TEXT, "
+                + "PASSWORD TEXT, " //Never store passwords in clear text in real apps
+                + "HEALTH_CARD_NUMB TEXT, "
+                + "DATE INTEGER);";
+
+        db.execSQL(sql);
 
         Date today = new Date(); //we want to start with some initial data
         ContentValues personValues = new ContentValues();
