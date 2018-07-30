@@ -18,6 +18,8 @@
                 android:id="@+id/Height"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="Height"
+                android:inputType="numberDecimal"
                 tools:text="Enter Height" />
         </TableRow>
 
@@ -29,6 +31,8 @@
                 android:id="@+id/Weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="Weight"
+                android:inputType="numberDecimal"
                 tools:text="Enter Weight" />
         </TableRow>
 
@@ -40,6 +44,10 @@
                 android:id="@+id/CalculateBMI"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="calculate"
+                android:text="Calculate BMI"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:visibility="visible"
                 tools:text="Calculate BMI" />
         </TableRow>
 
@@ -51,6 +59,7 @@
                 android:id="@+id/Result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="Result"
                 tools:text="Result" />
         </TableRow>
     </TableLayout>

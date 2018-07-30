@@ -21,11 +21,13 @@ class InClassDatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db){
 
+        //context.deleteDatabase(in-class);
+
         String sql = "CREATE TABLE " + TABLE_NAME + " ("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "NAME TEXT, "
                 + "PASSWORD TEXT, " //Never store passwords in clear text in real apps
-                + "HEALTH_CARD_NUMB TEXT, "
+                + "HEALTH_CARD_NUMB INTEGER, "
                 + "DATE INTEGER);";
 
         db.execSQL(sql);
@@ -37,6 +39,7 @@ class InClassDatabaseHelper extends SQLiteOpenHelper{
         personValues.put("HEALTH_CARD_NUMB","1234 5678 9101");
         personValues.put("DATE",today.getTime());
 
+        db.insert("in-class", null, personValues);
 
     }
 
