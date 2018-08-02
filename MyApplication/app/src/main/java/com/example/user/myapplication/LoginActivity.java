@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import android.app.Activity;
@@ -29,6 +30,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+//import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,9 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
+    InClassDatabaseHelper helper = new InClassDatabaseHelper(this);
+
+
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -50,7 +56,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "qwerty:hello", "asdfzxc:world"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -58,7 +64,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    //private AutoCompleteTextView mEmailView;
+    private static AutoCompleteTextView userName;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -68,7 +75,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        //mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        userName = (AutoCompleteTextView) findViewById(R.id.UserName);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -93,6 +101,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+
+
+
     }
 
     private void populateAutoComplete() {
@@ -145,11 +158,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        userName.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String email = userName.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -164,12 +177,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            userName.setError(getString(R.string.error_field_required));
+            focusView = userName;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            userName.setError(getString(R.string.error_invalid_email));
+            focusView = userName;
             cancel = true;
         }
 
@@ -184,11 +197,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
+
+
     }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return (email.length()>4)&&(email.length()<12);
     }
 
     private boolean isPasswordValid(String password) {
@@ -272,7 +287,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        userName.setAdapter(adapter);
     }
 
 
@@ -331,18 +346,73 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             if (success) {
                 //finish();
 
-                Double heightVal = 150.0;
-                Intent yourIntent = new Intent(LoginActivity.this, MainActivity.class);
-                Bundle b = new Bundle();
-                b.putDouble("height", heightVal);
-                yourIntent.putExtras(b);
-                startActivity(yourIntent);
+                SQLiteDatabase db = helper.getWritableDatabase();
+
+
+                String usrName = userName.toString();
+
+                String passwrd = mPassword.toString();
+
+
+
+
+
+                String whereClause = "USERNAME = ?";
+                String[] whereArgs = new String[] {
+                        usrName
+                };
+
+                String[] columnName = new String[]{"USERNAME"};
+
+                Cursor cursor = db.query("PERSON", columnName, whereClause, whereArgs, null, null, null);
+
+                if(cursor.moveToFirst()) {
+                    String username = cursor.getString(0);
+                    if(username.equals(usrName)){
+//                        Toast.makeText(this, "Username "+usrName+" already exists",
+//                                Toast.LENGTH_LONG).show();
+//                        System.out.println("User Exists");
+
+                        String whereClause2 = "PASSWORD = ?";
+                        String[] whereArgs2 = new String[] {
+                                mPassword.toString()
+                        };
+
+                        String[] columnName2 = new String[]{"PASSWORD"};
+
+                        Cursor cursor2 = db.query("PERSON", columnName2, whereClause2, whereArgs2, null, null, null);
+                        if(cursor2.moveToFirst()){
+                            String password2 = cursor2.getString(0);
+                            if(passwrd.equals(password2)){
+                                Intent loginIntent = new Intent(LoginActivity.this, CalculateBMI.class);
+                                startActivity(loginIntent);
+                            }else{
+                                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                mPasswordView.requestFocus();
+                            }
+                        }
+
+                    }
+                }
+
+
+
+//              Double heightVal = 150.0;
+
+//              Bundle b = new Bundle();
+//              b.putDouble("height", heightVal);
+//              yourIntent.putExtras(b);
+
 
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Intent regIntent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(regIntent);
             }
+
+
         }
+
+
 
         @Override
         protected void onCancelled() {
